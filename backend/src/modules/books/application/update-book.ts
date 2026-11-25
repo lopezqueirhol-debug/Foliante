@@ -1,6 +1,6 @@
 import { Book } from '../domain/book';
 import { BookChanges, BookRepository } from '../domain/book-repository';
-import { validateBookChanges } from '../domain/book-rules';
+import { validateBookChanges, duplicateIsbnError } from '../domain/book-rules';
 
 export type UpdateBookResult =
   | { ok: true; book: Book }
@@ -30,7 +30,7 @@ export function updateBook(
       return {
         ok: false,
         reason: 'duplicate_isbn',
-        errors: [new Error('El ISBN ya esta registrado en otro libro.')],
+        errors: [duplicateIsbnError()],
       };
     }
     throw err;

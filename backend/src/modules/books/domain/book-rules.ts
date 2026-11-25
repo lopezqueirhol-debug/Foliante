@@ -49,3 +49,7 @@ export function validateBookChanges(changes: BookChanges): Error[] {
       : null,
   ].filter((error): error is Error => error !== null);
 }
+
+export function duplicateIsbnError(): Error {
+  return new Error('El ISBN ya esta registrado en otro libro.');
+}
