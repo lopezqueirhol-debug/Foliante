@@ -12,21 +12,21 @@ export type HttpResponse<T> = {
   body: T;
 };
 
-function createdResponse<T>(data: T): HttpResponse<T> {
+export function createdResponse<T>(data: T): HttpResponse<T> {
   return {
     status: 201,
     body: data,
   };
 }
 
-function okResponse<T>(data: T): HttpResponse<T> {
+export function okResponse<T>(data: T): HttpResponse<T> {
   return {
     status: 200,
     body: data,
   };
 }
 
-function noContentResponse(): HttpResponse<null> {
+export function noContentResponse(): HttpResponse<null> {
   return {
     status: 204,
     body: null,
@@ -36,9 +36,11 @@ function noContentResponse(): HttpResponse<null> {
 type AnyBookResult =
   CreateBookResult | GetBookByIdResult | UpdateBookResult | DeleteBookResult;
 
-type FailureResult = Extract<AnyBookResult, { ok: false }>;
+export type FailureResult = Extract<AnyBookResult, { ok: false }>;
 
-function failureResponse(result: FailureResult): HttpResponse<ErrorBody> {
+export function failureResponse(
+  result: FailureResult,
+): HttpResponse<ErrorBody> {
   switch (result.reason) {
     case 'validation':
       return {
