@@ -3,11 +3,20 @@ import express, {
   type Request,
   type Response,
 } from 'express';
+import type { BookRepository } from './modules/books/domain/book-repository';
 
-export const app: Application = express();
+import { createBooksRouter } from './modules/books/http/books-router';
 
-app.use(express.json());
+export function createApp(repository: BookRepository): Application {
+  const app: Application = express();
 
-app.get('/api/health', (req: Request, res: Response) => {
-  res.status(200).json({ status: 'ok' });
-});
+  app.use(express.json());
+
+  app.get('/api/health', (req: Request, res: Response) => {
+    res.status(200).json({ status: 'ok' });
+  });
+
+  app.use('/api', createBooksRouter(repository));
+
+  return app;
+}
