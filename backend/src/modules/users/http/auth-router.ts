@@ -19,7 +19,7 @@ export function createAuthRouter(
 ) {
   const router = Router();
 
-  router.post('/auth/register', async (req, res) => {
+  router.post('/register', async (req, res) => {
     if (typeof req.body !== 'object' || req.body === null) {
       const response = errorResponse(400, [INVALID_BODY_MESSAGE]);
       return res.status(response.status).json(response.body);
@@ -46,7 +46,7 @@ export function createAuthRouter(
     return res.status(response.status).json(response.body);
   });
 
-  router.post('/auth/login', async (req, res) => {
+  router.post('/login', async (req, res) => {
     if (typeof req.body !== 'object' || req.body === null) {
       const response = errorResponse(400, [INVALID_BODY_MESSAGE]);
       return res.status(response.status).json(response.body);
