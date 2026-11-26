@@ -13,10 +13,6 @@ export interface LoginUserInput {
   password: string;
 }
 
-// Hash ficticio para igualar el tiempo de respuesta cuando el email no existe
-const DUMMY_HASH =
-  '$2a$10$CwTycUXWue0Thq9StjUM0uJ8.G8Wz0ZtFQWS0eyTb0DpfOhZ0yO0e';
-
 const INVALID_CREDENTIALS_MESSAGE = 'Credenciales invalidas.';
 
 export async function loginUser(
@@ -35,7 +31,7 @@ export async function loginUser(
 
   const passwordMatches = await hasher.compare(
     input.password,
-    user ? user.passwordHash : DUMMY_HASH,
+    user ? user.passwordHash : null,
   );
 
   if (!user || !passwordMatches) {
