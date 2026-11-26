@@ -8,4 +8,5 @@ export const config = {
   port: Number(process.env.PORT) || 3000,
   databasePath: process.env.DATABASE_PATH ?? './data/foliante.db',
   jwtSecret,
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? '1h',
 };
