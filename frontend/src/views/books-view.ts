@@ -21,6 +21,7 @@ type BookPayload = {
   title: string;
   isbn: string;
   publishedYear: number | null;
+  finishedAt: string | null;
 };
 
 const MONTH_NAMES = [
@@ -78,6 +79,7 @@ export function renderBooksView(root: HTMLElement, onLogout: () => void): void {
   const titleInput = el('input', { name: 'title', required: '' });
   const isbnInput = el('input', { name: 'isbn', required: '' });
   const yearInput = el('input', { name: 'publishedYear', type: 'number' });
+  const finishedInput = el('input', { type: 'date', name: 'finishedAt' });
   const submitButton = el('button', { type: 'submit' }, 'Crear libro');
   const cancelButton = el('button', { type: 'button' }, 'Cancelar edicion');
   cancelButton.hidden = true;
@@ -87,7 +89,8 @@ export function renderBooksView(root: HTMLElement, onLogout: () => void): void {
     {},
     el('label', {}, 'Titulo ', titleInput),
     el('label', {}, 'ISBN ', isbnInput),
-    el('label', {}, 'Anio de publicacion ', yearInput),
+    el('label', {}, 'Año de publicacion ', yearInput),
+    el('label', {}, 'Fecha de fin ', finishedInput),
     submitButton,
     cancelButton,
   );
@@ -111,16 +114,19 @@ export function renderBooksView(root: HTMLElement, onLogout: () => void): void {
     isbnInput.value = book.isbn;
     yearInput.value =
       book.publishedYear === null ? '' : String(book.publishedYear);
+    finishedInput.value = book.finishedAt ?? '';
     submitButton.textContent = 'Guardar';
     cancelButton.hidden = false;
   }
 
   function buildPayload(): BookPayload {
     const year = yearInput.value.trim();
+    const finished = finishedInput.value.trim();
     return {
       title: titleInput.value.trim(),
       isbn: isbnInput.value.trim(),
       publishedYear: year === '' ? null : Number(year),
+      finishedAt: finished === '' ? null : finished,
     };
   }
 
