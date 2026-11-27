@@ -25,7 +25,7 @@ export function renderAuthView(root: HTMLElement, onLogin: () => void): void {
     'form',
     {},
     el('label', {}, 'Correo ', emailInput),
-    el('label', {}, 'Contrasena ', passwordInput),
+    el('label', {}, 'Contraseña ', passwordInput),
     el('button', { type: 'submit' }, 'Entrar'),
   );
 
@@ -37,7 +37,7 @@ export function renderAuthView(root: HTMLElement, onLogin: () => void): void {
 
   function validate(email: string, password: string): string | null {
     if (!email.trim() || !password) {
-      return 'Completa el correo y la contrasena.';
+      return 'Completa el correo y la contraseña.';
     }
     if (!EMAIL_PATTERN.test(email.trim())) {
       return 'El correo no tiene un formato valido.';
