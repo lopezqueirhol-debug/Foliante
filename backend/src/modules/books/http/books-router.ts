@@ -13,6 +13,7 @@ import { listBooks } from '../application/list-books';
 import { getBookById } from '../application/get-book-by-id';
 import { updateBook } from '../application/update-book';
 import { deleteBook } from '../application/delete-book';
+import { listFinishedBooksByMonth } from '../application/finished-books-by-month';
 
 function parseBookId(raw: string): number | null {
   const id = Number(raw);
@@ -63,6 +64,12 @@ export function createBooksRouter(
   router.get('/books', (req, res) => {
     const books = listBooks(repository, req.userId!);
     const response = okResponse(books);
+    return res.status(response.status).json(response.body);
+  });
+
+  router.get('/books/stats/finished-by-month', (req, res) => {
+    const stats = listFinishedBooksByMonth(repository, req.userId!);
+    const response = okResponse(stats);
     return res.status(response.status).json(response.body);
   });
 
