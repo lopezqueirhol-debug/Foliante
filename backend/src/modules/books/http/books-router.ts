@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import { BookChanges, BookRepository } from '../domain/book-repository';
+import type { TokenService } from '../../users/domain/token-service';
+import { createAuthMiddleware } from '../../users/http/auth-middleware';
 import {
   createdResponse,
   okResponse,
@@ -25,8 +27,13 @@ function parseBookId(raw: string): number | null {
 const INVALID_ID_MESSAGE = 'El id debe ser un entero positivo.';
 const INVALID_BODY_MESSAGE = 'El cuerpo debe estar en formato JSON.';
 
-export function createBooksRouter(repository: BookRepository) {
+export function createBooksRouter(
+  repository: BookRepository,
+  tokenService: TokenService,
+) {
   const router = Router();
+
+  router.use(createAuthMiddleware(tokenService));
 
   router.post('/books', (req, res) => {
     if (typeof req.body !== 'object' || req.body === null) {
@@ -34,6 +41,7 @@ export function createBooksRouter(repository: BookRepository) {
     }
 
     const newBook = {
+      userId: req.userId!,
       title: req.body.title,
       isbn: req.body.isbn,
       publishedYear: req.body.publishedYear ?? null,
@@ -51,8 +59,8 @@ export function createBooksRouter(repository: BookRepository) {
     return res.status(response.status).json(response.body);
   });
 
-  router.get('/books', (_req, res) => {
-    const books = listBooks(repository);
+  router.get('/books', (req, res) => {
+    const books = listBooks(repository, req.userId!);
     const response = okResponse(books);
     return res.status(response.status).json(response.body);
   });
@@ -64,7 +72,7 @@ export function createBooksRouter(repository: BookRepository) {
       return res.status(400).json({ errors: [INVALID_ID_MESSAGE] });
     }
 
-    const result = getBookById(repository, id);
+    const result = getBookById(repository, id, req.userId!);
 
     if (!result.ok) {
       const response = failureResponse(result);
@@ -101,7 +109,7 @@ export function createBooksRouter(repository: BookRepository) {
       changes.available = req.body.available;
     }
 
-    const result = updateBook(repository, id, changes);
+    const result = updateBook(repository, id, req.userId!, changes);
 
     if (!result.ok) {
       const response = failureResponse(result);
@@ -119,7 +127,7 @@ export function createBooksRouter(repository: BookRepository) {
       return res.status(400).json({ errors: [INVALID_ID_MESSAGE] });
     }
 
-    const result = deleteBook(repository, id);
+    const result = deleteBook(repository, id, req.userId!);
 
     if (!result.ok) {
       const response = failureResponse(result);

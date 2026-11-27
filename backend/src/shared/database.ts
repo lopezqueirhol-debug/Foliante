@@ -7,8 +7,16 @@ export function initDatabase(dbPath: string): DatabaseSync {
   mkdirSync(folderPath, { recursive: true });
   const db = new DatabaseSync(dbPath, { timeout: 5000 });
   db.exec(`
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT NOT NULL UNIQUE,
+            password_hash TEXT NOT NULL,
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ) STRICT;
+
         CREATE TABLE IF NOT EXISTS books (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL REFERENCES users(id),
             title TEXT NOT NULL,
             isbn TEXT NOT NULL UNIQUE,
             published_year INTEGER,
@@ -16,12 +24,7 @@ export function initDatabase(dbPath: string): DatabaseSync {
             created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
         ) STRICT;
 
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email TEXT NOT NULL UNIQUE,
-            password_hash TEXT NOT NULL,
-            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-        ) STRICT;
+        CREATE INDEX IF NOT EXISTS idx_books_user_id ON books(user_id);
     `);
   return db;
 }
