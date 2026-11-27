@@ -4,8 +4,8 @@ import {
   createdResponse,
   okResponse,
   noContentResponse,
-  failureResponse,
-} from './book-responses';
+} from '../../../shared/http/http-responses';
+import { failureResponse } from './book-responses';
 import { createBook } from '../application/create-book';
 import { listBooks } from '../application/list-books';
 import { getBookById } from '../application/get-book-by-id';
