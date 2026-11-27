@@ -13,6 +13,7 @@ import { listBooks } from '../application/list-books';
 import { getBookById } from '../application/get-book-by-id';
 import { updateBook } from '../application/update-book';
 import { deleteBook } from '../application/delete-book';
+import { listFinishedBooksByMonth } from '../application/finished-books-by-month';
 
 function parseBookId(raw: string): number | null {
   const id = Number(raw);
@@ -46,6 +47,7 @@ export function createBooksRouter(
       isbn: req.body.isbn,
       publishedYear: req.body.publishedYear ?? null,
       available: req.body.available ?? true,
+      finishedAt: req.body.finishedAt ?? null,
     };
 
     const result = createBook(repository, newBook);
@@ -62,6 +64,12 @@ export function createBooksRouter(
   router.get('/books', (req, res) => {
     const books = listBooks(repository, req.userId!);
     const response = okResponse(books);
+    return res.status(response.status).json(response.body);
+  });
+
+  router.get('/books/stats/finished-by-month', (req, res) => {
+    const stats = listFinishedBooksByMonth(repository, req.userId!);
+    const response = okResponse(stats);
     return res.status(response.status).json(response.body);
   });
 
@@ -107,6 +115,9 @@ export function createBooksRouter(
     }
     if (req.body.available !== undefined) {
       changes.available = req.body.available;
+    }
+    if (req.body.finishedAt !== undefined) {
+      changes.finishedAt = req.body.finishedAt;
     }
 
     const result = updateBook(repository, id, req.userId!, changes);

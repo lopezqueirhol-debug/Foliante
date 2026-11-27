@@ -5,7 +5,7 @@ const SALT_ROUNDS = 10;
 export class BcryptPasswordHasher implements PasswordHasher {
   // Hash ficticio: iguala el tiempo de respuesta cuando el usuario no existe
   private readonly dummyHash = bcrypt.hashSync(
-    'contrasena-ficticia',
+    'contraseña-ficticia',
     SALT_ROUNDS,
   );
 
