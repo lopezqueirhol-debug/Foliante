@@ -1,3 +1,4 @@
+import Chart from 'chart.js/auto';
 import { apiRequest } from '../api/client';
 import { clearToken } from '../auth/session';
 import { el } from '../ui/dom';
@@ -10,19 +11,61 @@ interface Book {
   available: boolean;
 }
 
+interface FinishedByMonth {
+  month: string;
+  count: number;
+}
+
 type BookPayload = {
   title: string;
   isbn: string;
   publishedYear: number | null;
 };
 
+const MONTH_NAMES = [
+  'ene',
+  'feb',
+  'mar',
+  'abr',
+  'may',
+  'jun',
+  'jul',
+  'ago',
+  'sep',
+  'oct',
+  'nov',
+  'dic',
+];
+
+function formatMonth(month: string): string {
+  const [year, monthNumber] = month.split('-');
+  const name = MONTH_NAMES[Number(monthNumber) - 1];
+
+  if (!year || !name) {
+    return month;
+  }
+
+  return `${name} ${year}`;
+}
+
 export function renderBooksView(root: HTMLElement, onLogout: () => void): void {
   root.replaceChildren();
 
   let editingId: number | null = null;
+  let chart: Chart | null = null;
 
   const message = el('p', { role: 'alert' });
   const list = el('ul');
+
+  const chartMessage = el('p', { class: 'chart-empty' });
+  const chartContainer = el('div', { class: 'chart-container' });
+  const chartSection = el(
+    'section',
+    {},
+    el('h2', {}, 'Libros terminados por mes'),
+    chartMessage,
+    chartContainer,
+  );
 
   const titleInput = el('input', { name: 'title', required: '' });
   const isbnInput = el('input', { name: 'isbn', required: '' });
@@ -105,6 +148,77 @@ export function renderBooksView(root: HTMLElement, onLogout: () => void): void {
     }
   }
 
+  async function loadStats(): Promise<void> {
+    const result = await apiRequest<FinishedByMonth[]>(
+      '/books/stats/finished-by-month',
+    );
+
+    if (!result.ok) {
+      if (result.status === 401) {
+        onLogout();
+        return;
+      }
+      showErrors(result.errors);
+      return;
+    }
+
+    if (chart) {
+      chart.destroy();
+      chart = null;
+    }
+
+    chartContainer.replaceChildren();
+
+    if (result.data.length === 0) {
+      chartMessage.textContent = 'Todavia no hay libros terminados.';
+      return;
+    }
+
+    chartMessage.textContent = '';
+
+    const canvas = el('canvas', {});
+    chartContainer.append(canvas);
+
+    const styles = getComputedStyle(document.documentElement);
+    const accent =
+      styles.getPropertyValue('--color-accent').trim() || '#1f4e79';
+    const textColor =
+      styles.getPropertyValue('--color-text').trim() || '#2b2620';
+    const gridColor =
+      styles.getPropertyValue('--color-border').trim() || '#e2d9c8';
+
+    chart = new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels: result.data.map((entry) => formatMonth(entry.month)),
+        datasets: [
+          {
+            label: 'Libros terminados',
+            data: result.data.map((entry) => entry.count),
+            backgroundColor: accent,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        color: textColor,
+        scales: {
+          x: { grid: { color: gridColor } },
+          y: {
+            beginAtZero: true,
+            ticks: { precision: 0 },
+            grid: { color: gridColor },
+          },
+        },
+      },
+    });
+  }
+
+  async function refresh(): Promise<void> {
+    await Promise.all([loadBooks(), loadStats()]);
+  }
+
   async function removeBook(id: number): Promise<void> {
     const result = await apiRequest(`/books/${id}`, { method: 'DELETE' });
 
@@ -116,7 +230,7 @@ export function renderBooksView(root: HTMLElement, onLogout: () => void): void {
     if (editingId === id) {
       resetForm();
     }
-    await loadBooks();
+    await refresh();
   }
 
   form.addEventListener('submit', async (event) => {
@@ -141,7 +255,7 @@ export function renderBooksView(root: HTMLElement, onLogout: () => void): void {
 
     showErrors([]);
     resetForm();
-    await loadBooks();
+    await refresh();
   });
 
   cancelButton.addEventListener('click', () => {
@@ -150,11 +264,19 @@ export function renderBooksView(root: HTMLElement, onLogout: () => void): void {
   });
 
   logoutButton.addEventListener('click', () => {
+    chart?.destroy();
     clearToken();
     onLogout();
   });
 
-  root.append(el('h1', {}, 'Mis libros'), logoutButton, form, message, list);
+  root.append(
+    el('h1', {}, 'Mis libros'),
+    logoutButton,
+    form,
+    message,
+    list,
+    chartSection,
+  );
 
-  void loadBooks();
+  void refresh();
 }

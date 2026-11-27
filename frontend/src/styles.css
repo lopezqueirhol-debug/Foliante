@@ -125,7 +125,9 @@ button {
   border-radius: var(--radius-sm);
   background: var(--color-surface);
   color: var(--color-text);
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 button[type='submit'] {
@@ -185,4 +187,20 @@ li .book-actions {
   display: flex;
   gap: var(--space-2);
   margin-top: auto;
+}
+
+h2 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: 1.3rem;
+  margin: var(--space-8) 0 var(--space-4);
+}
+
+.chart-container {
+  position: relative;
+  height: 280px;
+}
+
+.chart-empty {
+  color: var(--color-muted);
 }
