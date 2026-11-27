@@ -9,6 +9,7 @@ interface Book {
   isbn: string;
   publishedYear: number | null;
   available: boolean;
+  finishedAt: string | null;
 }
 
 interface FinishedByMonth {
@@ -46,6 +47,13 @@ function formatMonth(month: string): string {
   }
 
   return `${name} ${year}`;
+}
+
+function todayAsIsoDate(): string {
+  const now = new Date();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${now.getFullYear()}-${month}-${day}`;
 }
 
 export function renderBooksView(root: HTMLElement, onLogout: () => void): void {
@@ -132,15 +140,27 @@ export function renderBooksView(root: HTMLElement, onLogout: () => void): void {
     for (const book of result.data) {
       const editButton = el('button', { type: 'button' }, 'Editar');
       const deleteButton = el('button', { type: 'button' }, 'Borrar');
+      const markButton = el(
+        'button',
+        { type: 'button' },
+        'Marcar como terminado',
+      );
+      markButton.hidden = book.finishedAt !== null;
+
+      const finishedText =
+        book.finishedAt === null ? '' : `Terminado el ${book.finishedAt} `;
 
       editButton.addEventListener('click', () => startEditing(book));
       deleteButton.addEventListener('click', () => void removeBook(book.id));
+      markButton.addEventListener('click', () => void markAsFinished(book.id));
 
       list.append(
         el(
           'li',
           {},
           `${book.title} (ISBN ${book.isbn}) `,
+          finishedText,
+          markButton,
           editButton,
           deleteButton,
         ),
@@ -230,6 +250,20 @@ export function renderBooksView(root: HTMLElement, onLogout: () => void): void {
     if (editingId === id) {
       resetForm();
     }
+    await refresh();
+  }
+
+  async function markAsFinished(id: number): Promise<void> {
+    const result = await apiRequest(`/books/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ finishedAt: todayAsIsoDate() }),
+    });
+
+    if (!result.ok) {
+      showErrors(result.errors);
+      return;
+    }
+
     await refresh();
   }
 
