@@ -21,6 +21,7 @@ export function initDatabase(dbPath: string): DatabaseSync {
             isbn TEXT NOT NULL,
             published_year INTEGER,
             available INTEGER NOT NULL DEFAULT 1,
+            finished_at TEXT,
             created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
             UNIQUE (user_id, isbn)
         ) STRICT;
