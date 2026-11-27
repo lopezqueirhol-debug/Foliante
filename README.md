@@ -38,7 +38,7 @@ Variables de `.env`:
 
 ### Datos de demostracion
 
-Para cargar usuarios y libros de ejemplo, detén el backend antes de ejecutar el comando (recomendado para evitar bloqueos de SQLite):
+Para cargar usuarios y libros de ejemplo, deten el backend antes de ejecutar el comando (recomendado para evitar bloqueos de SQLite):
 
 ```powershell
 cd backend
