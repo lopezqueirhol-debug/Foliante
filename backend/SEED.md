@@ -27,9 +27,10 @@ Son datos de demostracion. No usar estas credenciales para nada real.
 
 ## Comportamiento
 
-- Es idempotente: si se ejecuta varias veces, no duplica usuarios ni libros.
 - No se ejecuta al arrancar el servidor; solo con `npm run seed`.
-- Escribe en la base indicada por `DATABASE_PATH` (por defecto `backend/data/foliante.db`).
+- Es idempotente: si se ejecuta varias veces, no duplica usuarios, ni libros con el mismo ISBN para el mismo usuario.
+- Si cambias `finishedAt` en el seed, los libros ya creados no se actualizan. Para aplicarlo, borra la base y vuelve a ejecutar.
+- Escribe en la base indicada por `DATABASE_PATH`. Por defecto es `./data/foliante.db`, relativa al directorio desde el que se ejecuta (`backend/`).
 
 ## Reiniciar los datos
 
