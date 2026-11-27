@@ -5,6 +5,7 @@ export interface Book {
   isbn: string;
   publishedYear: number | null;
   available: boolean;
+  finishedAt: string | null;
   createdAt: string;
 }
 

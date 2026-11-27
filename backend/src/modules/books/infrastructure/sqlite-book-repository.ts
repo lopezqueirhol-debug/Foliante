@@ -9,6 +9,7 @@ interface BookRow {
   isbn: string;
   published_year: number | null;
   available: number;
+  finished_at: string | null;
   created_at: string;
 }
 
@@ -17,8 +18,8 @@ export class SqliteBookRepository implements BookRepository {
 
   create(newBook: NewBook): Book {
     const stmt = this.db.prepare(`
-            INSERT INTO books (user_id, title, isbn, published_year, available)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO books (user_id, title, isbn, published_year, available, finished_at)
+            VALUES (?, ?, ?, ?, ?, ?)
         `);
 
     const result = stmt.run(
@@ -27,6 +28,7 @@ export class SqliteBookRepository implements BookRepository {
       newBook.isbn,
       newBook.publishedYear,
       newBook.available ? 1 : 0,
+      newBook.finishedAt,
     );
 
     const book = this.findRowById(Number(result.lastInsertRowid));
@@ -73,6 +75,10 @@ export class SqliteBookRepository implements BookRepository {
       assignments.push('available = ?');
       params.push(changes.available ? 1 : 0);
     }
+    if (changes.finishedAt !== undefined) {
+      assignments.push('finished_at = ?');
+      params.push(changes.finishedAt);
+    }
 
     if (assignments.length === 0) {
       return this.findById(id, userId);
@@ -116,6 +122,7 @@ export class SqliteBookRepository implements BookRepository {
       isbn: row.isbn,
       publishedYear: row.published_year,
       available: row.available === 1,
+      finishedAt: row.finished_at,
       createdAt: row.created_at,
     };
   }

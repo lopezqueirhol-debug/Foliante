@@ -46,6 +46,7 @@ export function createBooksRouter(
       isbn: req.body.isbn,
       publishedYear: req.body.publishedYear ?? null,
       available: req.body.available ?? true,
+      finishedAt: req.body.finishedAt ?? null,
     };
 
     const result = createBook(repository, newBook);
@@ -107,6 +108,9 @@ export function createBooksRouter(
     }
     if (req.body.available !== undefined) {
       changes.available = req.body.available;
+    }
+    if (req.body.finishedAt !== undefined) {
+      changes.finishedAt = req.body.finishedAt;
     }
 
     const result = updateBook(repository, id, req.userId!, changes);
