@@ -18,10 +18,11 @@ export function initDatabase(dbPath: string): DatabaseSync {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL REFERENCES users(id),
             title TEXT NOT NULL,
-            isbn TEXT NOT NULL UNIQUE,
+            isbn TEXT NOT NULL,
             published_year INTEGER,
             available INTEGER NOT NULL DEFAULT 1,
-            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE (user_id, isbn)
         ) STRICT;
 
         CREATE INDEX IF NOT EXISTS idx_books_user_id ON books(user_id);
