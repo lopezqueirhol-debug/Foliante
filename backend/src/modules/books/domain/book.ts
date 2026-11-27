@@ -1,5 +1,6 @@
 export interface Book {
   readonly id: number;
+  readonly userId: number;
   title: string;
   isbn: string;
   publishedYear: number | null;

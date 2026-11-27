@@ -44,7 +44,7 @@ export function createApp(deps: AppDependencies): Application {
       deps.tokenService,
     ),
   );
-  app.use('/api', createBooksRouter(deps.bookRepository));
+  app.use('/api', createBooksRouter(deps.bookRepository, deps.tokenService));
 
   app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
     if (isJsonParseError(err)) {

@@ -11,6 +11,7 @@ export type UpdateBookResult =
 export function updateBook(
   repository: BookRepository,
   id: number,
+  userId: number,
   changes: BookChanges,
 ): UpdateBookResult {
   const errors = validateBookChanges(changes);
@@ -21,7 +22,7 @@ export function updateBook(
   let updated: Book | null;
 
   try {
-    updated = repository.update(id, changes);
+    updated = repository.update(id, userId, changes);
   } catch (err) {
     if (
       err instanceof Error &&
