@@ -6,8 +6,9 @@ export type DeleteBookResult =
 export function deleteBook(
   repository: BookRepository,
   id: number,
+  userId: number,
 ): DeleteBookResult {
-  const deleted = repository.delete(id);
+  const deleted = repository.delete(id, userId);
 
   if (!deleted) {
     return { ok: false, reason: 'not_found' };

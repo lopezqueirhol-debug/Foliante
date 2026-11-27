@@ -7,8 +7,9 @@ export type GetBookByIdResult =
 export function getBookById(
   repository: BookRepository,
   id: number,
+  userId: number,
 ): GetBookByIdResult {
-  const book = repository.findById(id);
+  const book = repository.findById(id, userId);
 
   if (!book) {
     return { ok: false, reason: 'not_found' };
