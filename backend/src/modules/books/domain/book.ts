@@ -10,3 +10,8 @@ export interface Book {
 }
 
 export type NewBook = Omit<Book, 'id' | 'createdAt'>;
+
+export interface FinishedByMonth {
+  month: string;
+  count: number;
+}

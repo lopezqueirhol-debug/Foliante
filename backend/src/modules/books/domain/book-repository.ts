@@ -1,4 +1,4 @@
-import type { Book, NewBook } from './book';
+import type { Book, FinishedByMonth, NewBook } from './book';
 
 export type BookChanges = Partial<Omit<Book, 'id' | 'userId' | 'createdAt'>>;
 
@@ -8,4 +8,5 @@ export interface BookRepository {
   findById(id: number, userId: number): Book | null;
   update(id: number, userId: number, changes: BookChanges): Book | null;
   delete(id: number, userId: number): boolean;
+  countFinishedByMonth(userId: number): FinishedByMonth[];
 }
